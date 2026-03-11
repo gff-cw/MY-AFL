@@ -68,7 +68,7 @@ jobs:
             chmod +x ./server_example_basic_io
             export AFL_NO_UI=1
 
-            timeout 3600 bash -c '
+            timeout 21300 bash -c '
             LD_PRELOAD=/tmp/preeny/src/desock.so \
             ../../../../afl-fuzz \
                 -i inputs/seed_bin_origin \
