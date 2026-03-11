@@ -24,6 +24,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential cmake libtool autoconf automake git
 
+      - name: Build and install cJSON from source
+        run: |
+          cd cJSON
+          cd build
+          cmake .. -DENABLE_CJSON_UTILS=On -DENABLE_CJSON_TEST=Off -DCMAKE_INSTALL_PREFIX=/usr
+          make
+          sudo make DESTDIR=$pkgdir install
+          cd ..
+
       - name: Build AFL tools from source
         run: |
           sudo make
