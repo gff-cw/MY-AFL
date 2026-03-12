@@ -77,10 +77,10 @@ jobs:
 
           (
             while true; do
-              sleep 60
+              sleep 180
               echo "===== $(date) ====="
-              if [ -f outputs_test/default/fuzzer_stats ]; then
-                cat outputs_test/default/fuzzer_stats
+              if [ -f outputs_test/fuzzer_stats ]; then
+                cat outputs_test/fuzzer_stats
                 echo
               else
                 echo "fuzzer_stats not generated yet"
