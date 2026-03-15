@@ -52,29 +52,26 @@ jobs:
             libini-config-dev \
             libseccomp-dev
 
-      - name: Restore cJSON cache
-        id: cache-cjson
+      - name: Restore cJSON source cache
+        id: cache-cjson-src
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/.deps/cjson
-          key: ${{ runner.os }}-cjson-v1.7.18
+            path: ${{ github.workspace }}/.cache/cJSON
+            key: ${{ runner.os }}-cjson-src-v1.7.18
 
       - name: Build and install cJSON from source
-        if: steps.cache-cjson.outputs.cache-hit != 'true'
         run: |
-          git clone --depth 1 --branch v1.7.18 https://github.com/DaveGamble/cJSON.git /tmp/cJSON
-          cmake -S /tmp/cJSON -B /tmp/cJSON/build \
-            -DENABLE_CJSON_UTILS=On \
-            -DENABLE_CJSON_TEST=Off \
-            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/.deps/cjson"
-          cmake --build /tmp/cJSON/build -j"$(nproc)"
-          cmake --install /tmp/cJSON/build
+          if [ ! -d "${{ github.workspace }}/.cache/cJSON/.git" ]; then
+            git clone --depth 1 --branch v1.7.18 https://github.com/DaveGamble/cJSON.git "${{ github.workspace }}/.cache/cJSON"
+          fi
 
-      - name: Export cJSON paths
-        run: |
-          echo "CMAKE_PREFIX_PATH=${{ github.workspace }}/.deps/cjson:${CMAKE_PREFIX_PATH}" >> "$GITHUB_ENV"
-          echo "PKG_CONFIG_PATH=${{ github.workspace }}/.deps/cjson/lib/pkgconfig:${PKG_CONFIG_PATH}" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=${{ github.workspace }}/.deps/cjson/lib:${LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
+          cd "${{ github.workspace }}/.cache/cJSON"
+          mkdir -p build
+          cd build
+          cmake .. -DENABLE_CJSON_UTILS=On -DENABLE_CJSON_TEST=Off -DCMAKE_INSTALL_PREFIX=/usr
+          make -j"$(nproc)"
+          sudo make install
+          sudo ldconfig
 
       - name: Build AFL tools from source
         run: |
