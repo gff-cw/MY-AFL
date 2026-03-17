@@ -146,7 +146,7 @@ jobs:
 
           (
             while true; do
-              sleep 180
+              sleep 600
               echo "===== $(date) ====="
               if [ -f outputs_test/fuzzer_stats ]; then
                 cat outputs_test/fuzzer_stats
